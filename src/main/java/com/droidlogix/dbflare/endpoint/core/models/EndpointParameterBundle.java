@@ -50,7 +50,7 @@ public class EndpointParameterBundle implements IEndpointParameterBundle
 			int i = 0;
 			for(IEndpointParameter item : parameters)
 			{
-				ids[i] = item.getEndpoint_idEndpoint();
+				ids[i] = item.getIdEndpointParameter();
 				++i;
 			}
 			return ids;

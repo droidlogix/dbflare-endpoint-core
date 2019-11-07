@@ -203,16 +203,19 @@ public class EndpointCore implements IEndpointCore
 	@Override
 	public void deleteEndpointParameters(long idEndpoint, long[] ids) throws SQLException, SqliteDriverNotFoundException
 	{
-		if(ids != null && ids.length > 0)
+		if (ids != null && ids.length > 0)
 		{
 			for (long id : ids)
 			{
-				if(id != 0)
+				if (id != 0)
 				{
 					IEndpointParameter endpointParameter = this.getEndpointParameter(id);
-					if (endpointParameter.getEndpoint_idEndpoint() == idEndpoint && endpointParameter.getIdEndpointParameter() != 0)
+					if (endpointParameter != null)
 					{
-						this.deleteEndpointParameter(endpointParameter.getIdEndpointParameter());
+						if (endpointParameter.getEndpoint_idEndpoint() == idEndpoint && endpointParameter.getIdEndpointParameter() != 0)
+						{
+							this.deleteEndpointParameter(endpointParameter.getIdEndpointParameter());
+						}
 					}
 				}
 			}
@@ -251,7 +254,7 @@ public class EndpointCore implements IEndpointCore
 			{
 				if (item.getIdEndpointParameter() == 0) // New record
 				{
-					if(!item.getIncomingParameterName().trim().isEmpty() && !item.getOutgoingParameterName().trim().isEmpty())
+					if (!item.getIncomingParameterName().trim().isEmpty() && !item.getOutgoingParameterName().trim().isEmpty())
 					{
 						EndpointParameter endpointParameter = new EndpointParameter();
 						endpointParameter.setEndpoint_idEndpoint(idEndpoint);
@@ -267,7 +270,7 @@ public class EndpointCore implements IEndpointCore
 					IEndpointParameter endpointParameter = getEndpointParameter(item.getIdEndpointParameter());
 					if (endpointParameter != null)
 					{
-						if(!item.getIncomingParameterName().trim().isEmpty() && !item.getOutgoingParameterName().trim().isEmpty())
+						if (!item.getIncomingParameterName().trim().isEmpty() && !item.getOutgoingParameterName().trim().isEmpty())
 						{
 							endpointParameter.setIncomingParameterName(item.getIncomingParameterName());
 							endpointParameter.setIncomingParameterNameType(item.getIncomingParameterNameType());
