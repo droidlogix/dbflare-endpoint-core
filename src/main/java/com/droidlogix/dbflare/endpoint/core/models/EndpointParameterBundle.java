@@ -53,6 +53,7 @@ public class EndpointParameterBundle implements IEndpointParameterBundle
 				ids[i] = item.getEndpoint_idEndpoint();
 				++i;
 			}
+			return ids;
 		}
 		return new long[0];
 	}
