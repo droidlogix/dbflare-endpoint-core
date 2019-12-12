@@ -55,4 +55,73 @@ public abstract class EndpointCoreSqlTemplate
 	public static final String GET_ENDPOINT_CHANGE_LOGS_BY_ENDPOINT = "SELECT * FROM endpoint_change_log WHERE endpoint_idEndpoint = ?";
 
 	//endregion
+
+	//region generate
+
+	public static final String CREATE_ENDPOINT_DB = "DROP TABLE IF EXISTS endpoint_db; " +
+			"CREATE TABLE endpoint_db ( " +
+			"idEndpointDb integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+			"persistenceUnitName TEXT, " +
+			"databasePlatform TEXT, " +
+			"jdbcDriver TEXT, " +
+			"jdbcUrl TEXT, " +
+			"jdbcUsername  TEXT, " +
+			"jdbcPassword TEXT); " +
+			"BEGIN; " +
+			"INSERT INTO endpoint_db VALUES (1, 'persistentUnit1', 'org.eclipse.persistence.platform.database.MySQLPlatform', 'com.mysql.jdbc.Driver', 'jdbc:mysql://localhost:3306/db?autoReconnect=true&useUnicode=yes', 'username', 'password'); " +
+			"COMMIT; ";
+
+	public static final String CREATE_ENDPOINT = "DROP TABLE IF EXISTS endpoint; " +
+			"CREATE TABLE endpoint ( " +
+			"idEndpoint integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+			"endpointDb_idEndpointDb integer, " +
+			"api TEXT, " +
+			"method TEXT, " +
+			"description TEXT, " +
+			"queryString TEXT, " +
+			"queryType TEXT, " +
+			"queryResultType TEXT, " +
+			"queryResultBinding TEXT, " +
+			"mappingValue TEXT, " +
+			"cacheEnabled integer, " +
+			"cacheTtl integer, " +
+			"status TEXT, " +
+			"CONSTRAINT fk_endpoint_db_endpoint FOREIGN KEY (endpointDb_idEndpointDb) REFERENCES endpoint_db (idEndpointDb) ON DELETE CASCADE ON UPDATE CASCADE); ";
+
+	public static final String CREATE_ENDPOINT_CHANGE_LOG = "DROP TABLE IF EXISTS endpoint_change_log; " +
+			"CREATE TABLE endpoint_change_log ( " +
+			"idEndpointChangeLog integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+			"endpoint_idEndpoint integer, " +
+			"originalPayload TEXT, " +
+			"modifiedPayload TEXT, " +
+			"differenceRemarks TEXT, " +
+			"entryDateTime integer, " +
+			"CONSTRAINT fk_endpoint_endpoint_change_log FOREIGN KEY (endpoint_idEndpoint) REFERENCES endpoint (idEndpoint) ON DELETE CASCADE ON UPDATE NO ACTION); ";
+
+	public static final String CREATE_ENDPOINT_PARAMETER = "DROP TABLE IF EXISTS endpoint_parameter; " +
+			"CREATE TABLE endpoint_parameter ( " +
+			"idEndpointParameter integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+			"endpoint_idEndpoint integer, " +
+			"incomingParameterName TEXT, " +
+			"incomingParameterNameType TEXT, " +
+			"outgoingParameterName TEXT, " +
+			"outgoingParameterNameType TEXT, " +
+			"nullableValue integer, " +
+			"preprocessor TEXT, " +
+			"CONSTRAINT fk_endpoint_endpoint_parameter FOREIGN KEY (endpoint_idEndpoint) REFERENCES endpoint (idEndpoint) ON DELETE CASCADE ON UPDATE NO ACTION); ";
+
+	public static final String CREATE_INDEXES = "" +
+			"CREATE INDEX main.idx_endpoint_db_idEndpointDb " +
+			"ON endpoint (endpointDb_idEndpointDb ASC); " +
+			"" +
+			"CREATE UNIQUE INDEX main.unique_api " +
+			"ON endpoint (api ASC); " +
+			"" +
+			"CREATE INDEX main.idx_endpoint_idEndpoint2 " +
+			"ON endpoint_change_log (endpoint_idEndpoint ASC); " +
+			"" +
+			"CREATE INDEX main.idx_endpoint_idEndpoint1 " +
+			"ON endpoint_parameter (endpoint_idEndpoint ASC); ";
+
+	//endregion
 }
