@@ -1,9 +1,5 @@
 package com.droidlogix.dbflare.endpoint.core.models;
 
-import com.dbflare.core.models.EndpointParameter;
-import com.dbflare.core.models.IEndpoint;
-import com.dbflare.core.models.IEndpointParameter;
-
 import java.util.ArrayList;
 import java.util.List;
 

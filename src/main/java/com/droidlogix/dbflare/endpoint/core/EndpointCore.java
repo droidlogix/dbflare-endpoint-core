@@ -1,7 +1,6 @@
 package com.droidlogix.dbflare.endpoint.core;
 
-import com.dbflare.core.models.*;
-import com.droidlogix.dbflare.endpoint.core.models.EndpointParameterBundle;
+import com.droidlogix.dbflare.endpoint.core.models.*;
 import com.droidlogix.sqlite.datahandler.SqliteRepository;
 import com.droidlogix.sqlite.datahandler.exceptions.SqliteDriverNotFoundException;
 
@@ -23,6 +22,8 @@ public class EndpointCore implements IEndpointCore
 	{
 		this.sqliteRepository = sqliteRepository;
 	}
+
+	//region ENDPOINT DB
 
 	@Override
 	public IEndpointDb createEndpointDb(IEndpointDb endpointDb) throws SQLException, SqliteDriverNotFoundException
@@ -73,6 +74,10 @@ public class EndpointCore implements IEndpointCore
 	{
 		return this.sqliteRepository.getList(EndpointCoreSqlTemplate.GET_ENDPOINT_DBS, new EndpointDb());
 	}
+
+	//endregion
+
+	//region ENDPOINT
 
 	@Override
 	public IEndpoint createEndpoint(IEndpoint endpoint) throws SQLException, SqliteDriverNotFoundException
@@ -165,6 +170,25 @@ public class EndpointCore implements IEndpointCore
 		parameters.put(1, id);
 		return this.sqliteRepository.getList(EndpointCoreSqlTemplate.GET_ENDPOINTS_BY_ENDPOINTDB, parameters, new Endpoint());
 	}
+
+	@Override
+	public List<IEndpointHeaderInfo> searchEndpointHeaders(String keyword) throws SQLException, SqliteDriverNotFoundException
+	{
+		if(keyword != null && !keyword.trim().isEmpty())
+		{
+			Map<Integer, Object> parameters = new HashMap<>();
+			parameters.put(1, "%" + keyword + " %");
+			parameters.put(2, "%" + keyword + " %");
+			parameters.put(3, "%" + keyword + " %");
+			parameters.put(4, "%" + keyword + " %");
+			return this.sqliteRepository.getList(EndpointCoreSqlTemplate.SEARCH_ENDPOINT_HEADERS, parameters, new EndpointHeaderInfo());
+		}
+		return getEndpointHeaders();
+	}
+
+	//endregion
+
+	//region ENDPOINT PARAMETER
 
 	@Override
 	public IEndpointParameter createEndpointParameter(IEndpointParameter endpointParameter) throws SQLException, SqliteDriverNotFoundException
@@ -283,4 +307,72 @@ public class EndpointCore implements IEndpointCore
 			}
 		}
 	}
+
+	//endregion
+
+	//region USER
+
+	@Override
+	public IUser createUser(IUser user) throws SQLException, SqliteDriverNotFoundException
+	{
+		Map<Integer, Object> parameters = new HashMap<>();
+		parameters.put(1, user.getUsername());
+		parameters.put(2, user.getPassword());
+		parameters.put(3, user.getName());
+		parameters.put(4, user.getCreatedDateTime());
+		parameters.put(5, user.getModifiedDateTime());
+		parameters.put(6, user.getIncorrectLoginAttempt());
+		parameters.put(7, user.getLockoutDateTime());
+		parameters.put(8, user.getStatus());
+		user.setIdUser(this.sqliteRepository.insert(EndpointCoreSqlTemplate.INSERT_USER, parameters));
+		return user;
+	}
+
+	@Override
+	public void updateUser(IUser user) throws SQLException, SqliteDriverNotFoundException
+	{
+		Map<Integer, Object> parameters = new HashMap<>();
+		parameters.put(1, user.getUsername());
+		parameters.put(2, user.getPassword());
+		parameters.put(3, user.getName());
+		parameters.put(4, user.getCreatedDateTime());
+		parameters.put(5, user.getModifiedDateTime());
+		parameters.put(6, user.getIncorrectLoginAttempt());
+		parameters.put(7, user.getLockoutDateTime());
+		parameters.put(8, user.getStatus());
+		parameters.put(9, user.getIdUser());
+		this.sqliteRepository.update(EndpointCoreSqlTemplate.UPDATE_USER, parameters);
+	}
+
+	@Override
+	public void deleteUser(long id) throws SQLException, SqliteDriverNotFoundException
+	{
+		Map<Integer, Object> parameters = new HashMap<>();
+		parameters.put(1, id);
+		this.sqliteRepository.delete(EndpointCoreSqlTemplate.DELETE_USER, parameters);
+	}
+
+	@Override
+	public IUser getUser(long id) throws SQLException, SqliteDriverNotFoundException
+	{
+		Map<Integer, Object> parameters = new HashMap<>();
+		parameters.put(1, id);
+		return this.sqliteRepository.getSingle(EndpointCoreSqlTemplate.GET_USER, parameters, new User());
+	}
+
+	@Override
+	public IUser getUser(String username) throws SQLException, SqliteDriverNotFoundException
+	{
+		Map<Integer, Object> parameters = new HashMap<>();
+		parameters.put(1, username);
+		return this.sqliteRepository.getSingle(EndpointCoreSqlTemplate.GET_USER_BY_USERNAME, parameters, new User());
+	}
+
+	@Override
+	public List<IUser> getUsers() throws SQLException, SqliteDriverNotFoundException
+	{
+		return this.sqliteRepository.getList(EndpointCoreSqlTemplate.GET_USERS, new User());
+	}
+
+	//endregion
 }

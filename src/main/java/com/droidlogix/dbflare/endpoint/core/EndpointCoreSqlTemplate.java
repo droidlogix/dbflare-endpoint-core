@@ -30,6 +30,9 @@ public abstract class EndpointCoreSqlTemplate
 	public static final String GET_ENDPOINTS_BY_ENDPOINTDB = "SELECT * FROM endpoint WHERE endpointDb_idEndpoint = ? ORDER BY api";
 	public static final String GET_ENDPOINT_HEADERS = "SELECT endpoint.idEndpoint, endpoint.endpointDb_idEndpointDb, endpoint.api, endpoint.method, endpoint.queryType, endpoint.queryResultType FROM endpoint ORDER BY endpoint.api";
 	public static final String GET_ENDPOINT_HEADERS_BY_ENDPOINTDB = "SELECT endpoint.idEndpoint, endpoint.endpointDb_idEndpointDb, endpoint.api, endpoint.method, endpoint.queryType, endpoint.queryResultType FROM endpoint WHERE endpointDb_idEndpoint = ? ORDER BY endpoint.api";
+	public static final String SEARCH_ENDPOINT_HEADERS = "SELECT endpoint.idEndpoint, endpoint.endpointDb_idEndpointDb, endpoint.api, endpoint.method, endpoint.queryType, endpoint.queryResultType FROM endpoint " +
+			"WHERE lower(endpoint.api) LIKE ? OR lower(endpoint.description) LIKE ? OR lower(endpoint.queryString) LIKE ? OR lower(endpoint.mappingValue) LIKE ?" +
+			"ORDER BY endpoint.api";
 
 	//endregion
 
@@ -53,6 +56,18 @@ public abstract class EndpointCoreSqlTemplate
 	public static final String GET_ENDPOINT_CHANGE_LOG = "SELECT * FROM endpoint_change_log WHERE idEndpointChangeLog = ?";
 	public static final String GET_ENDPOINT_CHANGE_LOG_HEADERS_BY_ENDPOINT = "SELECT idEndpointChangeLog, endpoint_idEndpoint, differenceRemarks, entryDateTime FROM endpoint_change_log WHERE endpoint_idEndpoint = ?";
 	public static final String GET_ENDPOINT_CHANGE_LOGS_BY_ENDPOINT = "SELECT * FROM endpoint_change_log WHERE endpoint_idEndpoint = ?";
+
+	//endregion
+
+	//region USER
+
+	public static final String INSERT_USER = "INSERT INTO user (username, pwd, name, createdDateTime, modifiedDateTime, incorrectLoginAttempt, lockoutDateTime, status) "
+			+ "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+	public static final String UPDATE_USER = "UPDATE user SET username = ?, pwd = ?, name = ?, createdDateTime = ?, modifiedDateTime = ?, incorrectLoginAttempt = ?, lockoutDateTime = ?, status = ? WHERE idUser = ?";
+	public static final String DELETE_USER = "DELETE FROM user WHERE idUser = ?";
+	public static final String GET_USER = "SELECT * FROM user WHERE idUser = ?";
+	public static final String GET_USER_BY_USERNAME = "SELECT * FROM user WHERE username = ?";
+	public static final String GET_USERS = "SELECT * FROM user ORDER BY username";
 
 	//endregion
 
@@ -110,6 +125,28 @@ public abstract class EndpointCoreSqlTemplate
 			"preprocessor TEXT, " +
 			"CONSTRAINT fk_endpoint_endpoint_parameter FOREIGN KEY (endpoint_idEndpoint) REFERENCES endpoint (idEndpoint) ON DELETE CASCADE ON UPDATE NO ACTION); ";
 
+	public static final String CREATE_USER = "DROP TABLE IF EXISTS user; " +
+			"CREATE TABLE user ( " +
+			"idUser integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+			"username TEXT NOT NULL, " +
+			"pwd TEXT NOT NULL, " +
+			"name TEXT NOT NULL, " +
+			"createdDateTime integer NOT NULL, " +
+			"modifiedDateTime integer NOT NULL, " +
+			"incorrectLoginAttempt integer DEFAULT 0, " +
+			"lockoutDateTime integer, " +
+			"status TEXT); ";
+
+	public static final String CREATE_PAYLOAD_PARSER_RULE = "DROP TABLE IF EXISTS payload_parser_rule; " +
+			"CREATE TABLE payload_parser_rule ( " +
+			"idPayloadParserRule integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+			"code TEXT NOT NULL, " +
+			"description TEXT, " +
+			"parsingRule TEXT NOT NULL, " +
+			"createdDateTime integer NOT NULL, " +
+			"modifiedDateTime integer NOT NULL, " +
+			"status TEXT); ";
+
 	public static final String CREATE_INDEXES = "" +
 			"CREATE INDEX main.idx_endpoint_db_idEndpointDb " +
 			"ON endpoint (endpointDb_idEndpointDb ASC); " +
@@ -121,7 +158,13 @@ public abstract class EndpointCoreSqlTemplate
 			"ON endpoint_change_log (endpoint_idEndpoint ASC); " +
 			"" +
 			"CREATE INDEX main.idx_endpoint_idEndpoint1 " +
-			"ON endpoint_parameter (endpoint_idEndpoint ASC); ";
+			"ON endpoint_parameter (endpoint_idEndpoint ASC); " +
+			"" +
+			"CREATE UNIQUE INDEX main.unique_username " +
+			"ON user (username ASC);" +
+			"" +
+			"CREATE UNIQUE INDEX main.unique_payload_parser_rule_code " +
+			"ON payload_parser_rule (code ASC);";
 
 	//endregion
 }

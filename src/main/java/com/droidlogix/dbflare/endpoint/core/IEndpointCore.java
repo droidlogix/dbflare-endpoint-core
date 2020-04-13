@@ -1,7 +1,6 @@
 package com.droidlogix.dbflare.endpoint.core;
 
-import com.dbflare.core.models.*;
-import com.droidlogix.dbflare.endpoint.core.models.EndpointParameterBundle;
+import com.droidlogix.dbflare.endpoint.core.models.*;
 import com.droidlogix.sqlite.datahandler.exceptions.SqliteDriverNotFoundException;
 
 import java.sql.SQLException;
@@ -14,7 +13,7 @@ import java.util.List;
 
 public interface IEndpointCore
 {
-	//region endpoint_db
+	//region ENDPOINT_DB
 
 	/**
 	 * Create an entry for endpoint_db for database connection
@@ -54,7 +53,7 @@ public interface IEndpointCore
 
 	//endregion
 
-	//region endpoint
+	//region ENDPOINT
 
 	IEndpoint createEndpoint(IEndpoint endpoint) throws SQLException, SqliteDriverNotFoundException;
 
@@ -74,9 +73,11 @@ public interface IEndpointCore
 
 	List<IEndpointHeaderInfo> getEndpointHeadersByEndpointDb(long id) throws SQLException, SqliteDriverNotFoundException;
 
+	List<IEndpointHeaderInfo> searchEndpointHeaders(String keyword) throws SQLException, SqliteDriverNotFoundException;
+
 	//endregion
 
-	//region endpoint_parameters
+	//region ENDPOINT_PARAMETERS
 
 	IEndpointParameter createEndpointParameter(IEndpointParameter endpointParameter) throws SQLException, SqliteDriverNotFoundException;
 
@@ -93,6 +94,26 @@ public interface IEndpointCore
 	List<IEndpointParameter> getEndpointParametersByEndpoint(long id) throws SQLException, SqliteDriverNotFoundException;
 
 	void processEndpointParameter(long idEndpoint, EndpointParameterBundle endpointParameterBundle) throws SQLException, SqliteDriverNotFoundException;
+
+	//endregion
+
+	//region PAYLOAD PARSER RULE
+
+	//endregion
+
+	//region USER
+
+	IUser createUser(IUser user) throws SQLException, SqliteDriverNotFoundException;
+
+	void updateUser(IUser user) throws SQLException, SqliteDriverNotFoundException;
+
+	void deleteUser(long id) throws SQLException, SqliteDriverNotFoundException;
+
+	IUser getUser(long id) throws SQLException, SqliteDriverNotFoundException;
+
+	IUser getUser(String username) throws SQLException, SqliteDriverNotFoundException;
+
+	List<IUser> getUsers() throws SQLException, SqliteDriverNotFoundException;
 
 	//endregion
 }
